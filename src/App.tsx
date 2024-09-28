@@ -20,7 +20,7 @@ const App = () => {
   const [query, setQuery] = useState<string>(''); // State for search query
   const [viewMode, setViewMode] = useState<string>('grid'); // State for grid or list view
   const [copyMessageVisible, setCopyMessageVisible] = useState<boolean>(false); // State to control the "copied" message
-  const [filter, setFilter] = useState<string>('trending'); // State for filter, defaults to 'trending'
+  const [filter, setFilter] = useState<string>('trending'); // Default filter is trending
 
   const fetchMovies = async (query: string = '', limit: number = 20, page: number = 1, filter: string = 'trending') => {
     try {
@@ -34,8 +34,8 @@ const App = () => {
       // Apply filtering logic based on filter type
       if (filter === 'trending') {
         params.sort_by = 'download_count'; // Sort by download count for trending
-      } else if (filter === 'tv') {
-        params.genre = 'TV'; // Filter by TV series genre
+      } else if (filter === '4k') {
+        params.quality = '2160p'; // Filter by 4K quality (2160p)
       }
 
       const response = await axios.get(API_URL, { params });
@@ -98,8 +98,8 @@ const App = () => {
       {/* Control Bar */}
       <div className="control-bar">
         <button onClick={() => handleFilterClick('movies')} className={filter === 'movies' ? 'active-filter' : ''}>Movies</button>
-        <button onClick={() => handleFilterClick('tv')} className={filter === 'tv' ? 'active-filter' : ''}>TV Series</button>
         <button onClick={() => handleFilterClick('trending')} className={filter === 'trending' ? 'active-filter' : ''}>Trending</button>
+        <button onClick={() => handleFilterClick('4k')} className={filter === '4k' ? 'active-filter' : ''}>4K Movies</button>
       </div>
 
       {/* View Mode Bar */}
