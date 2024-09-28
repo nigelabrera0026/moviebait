@@ -17,4 +17,4 @@ RUN npx playwright install --with-deps chromium
 COPY . .
 
 # Run the tests as defined in package.json
-# CMD ["npm", "run", "ci"]
+# CMD ["npm", "ci"]
