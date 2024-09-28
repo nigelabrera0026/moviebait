@@ -20,39 +20,25 @@ const App = () => {
   const [query, setQuery] = useState<string>(''); // State for search query
   const [viewMode, setViewMode] = useState<string>('grid'); // State for grid or list view
   const [copyMessageVisible, setCopyMessageVisible] = useState<boolean>(false); // State to control the "copied" message
-  const [noResults, setNoResults] = useState<boolean>(false); // State to track no results
-  const [filter, setFilter] = useState<string>('movies'); // State to choose between Movies, TV series, or Trending
+  const [filter, setFilter] = useState<string>('movies'); // State to track current filter (Movies, TV, Trending)
 
-  const fetchMovies = async (query: string = '', filter: string = 'movies', limit: number = 20, page: number = 1) => {
+  const fetchMovies = async (query: string = '', limit: number = 20, page: number = 1, filter: string = 'movies') => {
     try {
       setLoading(true);
-      setNoResults(false); // Reset no results state
-
-      // Set default params
-      let params: any = {
+      const params: any = {
         query_term: query,
         limit,
         page,
       };
-
-      // Apply filter based on user selection
-      if (filter === 'movies') {
-        params.genre = ''; // No specific genre filtering for all movies
-      } else if (filter === 'tv_series') {
-        params.genre = 'Drama'; // Assume "Drama" as TV Series for demo purposes (this is flexible based on the API)
-      } else if (filter === 'trending') {
-        params.sort_by = 'download_count'; // Sort by download_count for trending
+      // Apply filtering logic based on filter type
+      if (filter === 'trending') {
+        params.sort_by = 'download_count';
+      } else if (filter === 'tv') {
+        params.genre = 'TV';
       }
 
       const response = await axios.get(API_URL, { params });
-
-      const fetchedMovies = response.data.data.movies || []; // Ensure movies is always an array
-      setMovies(fetchedMovies);
-
-      if (fetchedMovies.length === 0) {
-        setNoResults(true); // If no movies were found, set no results state
-      }
-
+      setMovies(response.data.data.movies || []); // Avoid breaking if no movies
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch movies.');
@@ -66,65 +52,66 @@ const App = () => {
 
   const copyMagnetLink = (hash: string, title: string) => {
     const magnetURL = `magnet:?xt=urn:btih:${hash}&dn=${encodeURIComponent(title)}`;
-    navigator.clipboard.writeText(magnetURL).then(() => {
-      // Show the copied message
-      setCopyMessageVisible(true);
-
-      // Hide the copied message after 2 seconds
-      setTimeout(() => {
-        setCopyMessageVisible(false);
-      }, 2000);
-    }).catch((err) => {
-      console.error('Failed to copy: ', err);
-    });
+    navigator.clipboard.writeText(magnetURL)
+      .then(() => {
+        setCopyMessageVisible(true);
+        setTimeout(() => {
+          setCopyMessageVisible(false);
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+      });
   };
+
+  const handleFilterClick = (selectedFilter: string) => {
+    setFilter(selectedFilter);
+    setQuery(''); // Clear search query when filter is clicked
+    fetchMovies('', 20, 1, selectedFilter); // Pass selected filter to fetch movies
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="content">
       <h1>Movie Bait</h1>
 
       {/* Search Bar */}
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        fetchMovies(query, filter);
-      }} className="search-bar">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchMovies(query, 20, 1, filter);
+        }}
+        className="search-bar"
+      >
         <input
           type="text"
-          placeholder="Search for movies or TV series..."
+          placeholder="Search for movies..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button type="submit">Search</button>
       </form>
 
-      {/* Filter Bar */}
-      <div className="filter-bar">
-        <button onClick={() => { setFilter('movies'); fetchMovies(query, 'movies'); }}>Movies</button>
-        <button onClick={() => { setFilter('tv_series'); fetchMovies(query, 'tv_series'); }}>TV Series</button>
-        <button onClick={() => { setFilter('trending'); fetchMovies(query, 'trending'); }}>Trending</button>
-      </div>
-
       {/* Control Bar */}
       <div className="control-bar">
+        <button onClick={() => handleFilterClick('movies')}>Movies</button>
+        <button onClick={() => handleFilterClick('tv')}>TV Series</button>
+        <button onClick={() => handleFilterClick('trending')}>Trending</button>
         <button onClick={() => setViewMode('grid')}>Grid View</button>
         <button onClick={() => setViewMode('list')}>List View</button>
       </div>
 
-      {/* Notification - Show the message only when visible */}
+      {/* Notification */}
       {copyMessageVisible && <div className="copy-message">Torrent magnet URL copied</div>}
 
-      {/* Movie List or No Results */}
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div>{error}</div>
-      ) : noResults ? (
-        <div className="no-results">
-          <h2>Sorry, no results found.</h2>
-        </div>
-      ) : (
-        <div className={viewMode === 'grid' ? 'movie-grid' : 'movie-list'}>
-          {movies.map((movie) => (
+      {/* Movie List */}
+      <div className={viewMode === 'grid' ? 'movie-grid' : 'movie-list'}>
+        {movies.length === 0 ? (
+          <p>No results found. Please try a different search.</p>
+        ) : (
+          movies.map((movie) => (
             <div key={movie.id} className={viewMode === 'grid' ? 'movie-card' : 'movie-list-item'}>
               <img src={movie.medium_cover_image} alt={movie.title} />
               <h3>{movie.title}</h3>
@@ -135,8 +122,8 @@ const App = () => {
                     key={index}
                     href="#"
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent default link behavior
-                      copyMagnetLink(torrent.hash, movie.title); // Copy the magnet link
+                      e.preventDefault();
+                      copyMagnetLink(torrent.hash, movie.title);
                     }}
                   >
                     Copy Torrent URL ({torrent.quality})
@@ -144,9 +131,9 @@ const App = () => {
                 ))}
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 };
