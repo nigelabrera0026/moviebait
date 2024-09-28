@@ -1,3 +1,23 @@
+# Movie Bait 🎥
+
+**Movie Bait** is a web application built with **React** and **Vite** that allows users to search for movies and TV series, view trending content, and copy torrent magnet links. The app fetches movie data from the **YTS API**, and it supports both grid and list views for the movie display.
+
+## Features
+
+- **Search Movies and TV Series**: Search for movies and TV series based on a query.
+- **Movies vs TV Series Filtering**: Users can choose between viewing movies or TV series by clicking on the appropriate buttons.
+- **Trending Section**: The app provides a "Trending" option, which sorts movies by download count, showing the most popular movies.
+- **Grid/List View**: Toggle between a grid view and list view to display movies in different formats.
+- **Torrent Magnet Links**: Users can copy the magnet torrent link of any movie directly from the app.
+- **Search Bar**: The search bar allows users to search for movies or TV series by name.
+
+## Tech Stack
+
+- **Frontend**: React (TypeScript), Axios for API requests, Vite for bundling
+- **API**: YTS API (Yify Torrents)
+- **CSS**: Custom styling using CSS (basic responsive grid system)
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
