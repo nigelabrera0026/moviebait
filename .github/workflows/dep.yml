@@ -1,45 +1,65 @@
-name: Frontend CI and Deploy
-
+name: Run tests then Deploy
 on:
   push:
     branches:
-      - 'release/**'  # Trigger on push to main branch
+      - 'release/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
+  
   test:
+    name: Run Test Suite
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: ./Dockerfile.ci
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
+    - name: Build Docker images
+      run: docker build -t main -f $COMPOSE_FILE .
 
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Run tests
-      run: npm run test
-
-    - name: Build Docker image for test
-      run: docker build -f dockerfile.test -t moviebait:test .
+    - name: Run Tests
+      run: docker run main
 
   deploy:
+    name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test]
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      BUILD_PATH_PREFIX: ${{ github.event.repository.name }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.2
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: echo $BUILD_PATH_PREFIX
+      - name: Build the project
+        run: npm run cd
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Build Docker image
-      run: docker build -f dockerfile.prod -t moviebait:latest .
-
-    - name: Deploy to Server
-      run: docker run -p 5173:5173 moviebait:latest
