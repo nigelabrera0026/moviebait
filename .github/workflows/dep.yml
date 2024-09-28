@@ -42,6 +42,4 @@ jobs:
       run: docker build -f dockerfile.prod -t moviebait:latest .
 
     - name: Deploy to Server
-      run: |
-        # Add your custom deployment commands (SSH into your server, use Docker Compose, etc.)
-        ssh user@your-server 'docker pull moviebait:latest && docker-compose up -d'
+      run: docker run -p 5173:5173 moviebait:latest
