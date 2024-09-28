@@ -20,9 +20,9 @@ const App = () => {
   const [query, setQuery] = useState<string>(''); // State for search query
   const [viewMode, setViewMode] = useState<string>('grid'); // State for grid or list view
   const [copyMessageVisible, setCopyMessageVisible] = useState<boolean>(false); // State to control the "copied" message
-  const [filter, setFilter] = useState<string>('movies'); // State to track current filter (Movies, TV, Trending)
+  const [filter, setFilter] = useState<string>('trending'); // State for filter, defaults to 'trending'
 
-  const fetchMovies = async (query: string = '', limit: number = 20, page: number = 1, filter: string = 'movies') => {
+  const fetchMovies = async (query: string = '', limit: number = 20, page: number = 1, filter: string = 'trending') => {
     try {
       setLoading(true);
       const params: any = {
@@ -30,11 +30,12 @@ const App = () => {
         limit,
         page,
       };
+
       // Apply filtering logic based on filter type
       if (filter === 'trending') {
-        params.sort_by = 'download_count';
+        params.sort_by = 'download_count'; // Sort by download count for trending
       } else if (filter === 'tv') {
-        params.genre = 'TV';
+        params.genre = 'TV'; // Filter by TV series genre
       }
 
       const response = await axios.get(API_URL, { params });
@@ -47,7 +48,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchMovies(); // Fetch initial set of movies on load
+    fetchMovies('', 20, 1, 'trending'); // Default to trending movies on load
   }, []);
 
   const copyMagnetLink = (hash: string, title: string) => {
@@ -67,7 +68,7 @@ const App = () => {
   const handleFilterClick = (selectedFilter: string) => {
     setFilter(selectedFilter);
     setQuery(''); // Clear search query when filter is clicked
-    fetchMovies('', 20, 1, selectedFilter); // Pass selected filter to fetch movies
+    fetchMovies('', 20, 1, selectedFilter); // Fetch filtered movies
   };
 
   if (loading) return <div>Loading...</div>;
@@ -96,11 +97,15 @@ const App = () => {
 
       {/* Control Bar */}
       <div className="control-bar">
-        <button onClick={() => handleFilterClick('movies')}>Movies</button>
-        <button onClick={() => handleFilterClick('tv')}>TV Series</button>
-        <button onClick={() => handleFilterClick('trending')}>Trending</button>
-        <button onClick={() => setViewMode('grid')}>Grid View</button>
-        <button onClick={() => setViewMode('list')}>List View</button>
+        <button onClick={() => handleFilterClick('movies')} className={filter === 'movies' ? 'active-filter' : ''}>Movies</button>
+        <button onClick={() => handleFilterClick('tv')} className={filter === 'tv' ? 'active-filter' : ''}>TV Series</button>
+        <button onClick={() => handleFilterClick('trending')} className={filter === 'trending' ? 'active-filter' : ''}>Trending</button>
+      </div>
+
+      {/* View Mode Bar */}
+      <div className="view-mode-bar">
+        <button onClick={() => setViewMode('grid')} className={viewMode === 'grid' ? 'active-view' : ''}>Grid View</button>
+        <button onClick={() => setViewMode('list')} className={viewMode === 'list' ? 'active-view' : ''}>List View</button>
       </div>
 
       {/* Notification */}

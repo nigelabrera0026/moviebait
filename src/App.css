@@ -52,14 +52,31 @@ h1 {
 }
 
 .control-bar button {
-  padding: 10px 16px;
-  margin: 0 10px;
-  background-color: #5ca4a9;
+  margin: 10px;
+  padding: 10px 15px;
+  background-color: #5cb5c0;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.active-filter {
+  background-color: #3997a0;
+}
+
+/* Styles for Grid/List View buttons */
+.view-mode-bar button {
+  margin: 10px;
+  padding: 10px 15px;
+  background-color: #5cb5c0;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.active-view {
+  background-color: #3997a0;
 }
 
 .control-bar button:hover {
