@@ -1,0 +1,23 @@
+# Using the official Node.js image as the base image
+FROM node:21-alpine3.18
+
+# Create and set the working directory
+WORKDIR /moviebait
+
+# Copy the package.json and package-lock.json files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy the entire app to the working directory
+COPY . .
+
+# Build the app using the cd script in package.json
+RUN npm run cd
+
+# Expose the port the app will run on
+EXPOSE 8083
+
+# Start the app in development mode
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
