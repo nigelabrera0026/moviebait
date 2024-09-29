@@ -1,20 +1,29 @@
-# Using the official Node.js image as the base image
-FROM node:21-bullseye
-
-# Create and set the working directory
-WORKDIR /moviebait
-
-# Copy the package.json and package-lock.json files
-COPY package*.json ./
+# Stage 1: Build the app
+FROM node:18-alpine AS build
+WORKDIR /app
 
 # Install dependencies
-RUN npm ci
+COPY package.json package-lock.json ./
+RUN npm ci  # Install dependencies
 
-# Install Playwright and its dependencies
-RUN npx playwright install --with-deps chromium
-
-# Copy the entire project to the working directory
+# Copy source code
 COPY . .
 
-# Run the Playwright tests
-CMD ["npm", "run", "ci:test"]
+# Build the project
+RUN npm run build
+
+# Stage 2: Serve the app and run tests
+FROM node:18-alpine AS test
+WORKDIR /app
+
+# Install dependencies
+COPY --from=build /app /app
+RUN npm install -g wait-on
+
+# Expose the Vite server port (5173)
+EXPOSE 5173
+
+# Run the tests in development mode
+CMD npm run dev & \
+    wait-on http://localhost:5173 && \
+    npm run test:playwright

@@ -1,15 +1,6 @@
-import React from 'react';
 
-interface ControlBarProps {
-  filter: string;
-  handleFilterClick: (filter: string) => void;
-  limit: number;
-  setLimit: (limit: number) => void;
-  viewMode: string;
-  setViewMode: (viewMode: string) => void;
-}
 
-const ControlBar = ({ filter, handleFilterClick, limit, setLimit, viewMode, setViewMode }) => {
+const ControlBar: ControlBarProps = ({ filter, handleFilterClick, limit, setLimit, viewMode, setViewMode }) => {
   return (
     <div className="flex justify-between items-center mb-4">
       {/* Left: View mode and limit dropdown */}
