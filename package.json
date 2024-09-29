@@ -10,10 +10,9 @@
     "deploy": "gh-pages -d dist",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "concurrently -gs all -c 'bold.purple,bold.blue,bold.yellow,bold.green,bold.red' 'npm:test:*(!ts)'",
-    "ci:test": "npm run test:jest && npm run test:playwright",
-    "test:jest": "jest",
+    "test": "npx playwright test",
     "test:playwright": "npx playwright test",
+    "ci:test": "npm run test:playwright",
     "cd": "BUILD_COMBINED='true' concurrently -gs all -c 'bold.purple,bold.blue,bold.yellow,bold.green,bold.red' npm:build:main"
   },
   "dependencies": {
@@ -33,7 +32,6 @@
     "@playwright/test": "^1.47.2",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
-    "@types/jest": "^29.5.13",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
@@ -45,7 +43,6 @@
     "gh-pages": "^6.1.1",
     "globals": "^15.9.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^29.7.0",
     "npx": "^3.0.0",
     "playwright": "^1.35.1",
     "postcss": "^8.4.47",
