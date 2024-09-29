@@ -5,18 +5,6 @@ const ControlBar = ({ filter, handleFilterClick, limit, setLimit, viewMode, setV
     <div className="flex justify-between items-center mb-4">
       {/* Left: View mode and limit dropdown */}
       <div className="flex space-x-4">
-        <button
-          onClick={() => setViewMode('grid')}
-          className={`px-4 py-2 rounded-md ${viewMode === 'grid' ? 'bg-blue-600' : 'bg-teal-500'} text-white`}
-        >
-          Grid View
-        </button>
-        <button
-          onClick={() => setViewMode('list')}
-          className={`px-4 py-2 rounded-md ${viewMode === 'list' ? 'bg-blue-600' : 'bg-teal-500'} text-white`}
-        >
-          List View
-        </button>
         <select
           value={limit}
           onChange={(e) => setLimit(parseInt(e.target.value))}
