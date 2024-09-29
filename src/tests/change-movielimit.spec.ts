@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('change movie display limit to 50', async ({ page }) => {
-  await page.goto('http://localhost:5173');
+  await page.goto('http://localhost:5173');  // Ensure Vite is running
 
   // Change the movie limit to 50
   await page.selectOption('select', '50');
