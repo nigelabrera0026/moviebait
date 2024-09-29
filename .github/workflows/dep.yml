@@ -1,5 +1,4 @@
-name: Run Playwright Tests and Deploy
-
+name: Run tests then Deploy
 on:
   push:
     branches:
@@ -12,38 +11,22 @@ permissions:
   id-token: write
 
 jobs:
-  # Test job
   test:
-    name: Run Playwright Test Suite
+    name: Run Test Suite
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: ./Dockerfile.ci
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+    - name: Build Docker images
+      run: docker build -t main -f $COMPOSE_FILE .
 
-    - name: Install Dependencies
-      run: npm ci
+    - name: Run Tests
+      run: docker run main
 
-    - name: Start Vite Server
-      run: npm run dev &
-      # Run Vite in the background to make it accessible
-
-    - name: Wait for Vite to be ready
-      run: npx wait-on http://localhost:5173
-      # Wait until Vite is fully ready and accessible
-
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    
-    - name: Run Playwright Tests
-      run: npm run test:playwright
-
-  # Deploy job, triggered after successful tests
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
@@ -58,26 +41,24 @@ jobs:
       BUILD_PATH_PREFIX: ${{ github.event.repository.name }}
 
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: 20
           cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build the Project
-        run: npm run build
-
+      - run: npm ci
+      - run: echo $BUILD_PATH_PREFIX
+      - name: Build the project
+        run: npm run cd
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'dist'
-
-      - name: Deploy to GitHub Pages
+      - name: Deploy to Github Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
