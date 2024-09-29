@@ -7,6 +7,14 @@ import Notification from './components/Notification';
 import NavBar from './components/NavBar';
 import './App.css';
 
+interface Movie {
+  id: number;
+  title: string;
+  medium_cover_image: string;
+  description_full: string;
+  torrents: Array<{ hash: string; quality: string }>;
+}
+
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);

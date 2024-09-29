@@ -1,6 +1,12 @@
 import React from 'react';
 
-const ViewModeBar = ({ viewMode, setViewMode }) => {
+// Define an interface for the props
+interface ViewModeBarProps {
+  viewMode: 'grid' | 'list'; // Define the possible values for viewMode
+  setViewMode: (mode: 'grid' | 'list') => void; // Function to update viewMode
+}
+
+const ViewModeBar: React.FC<ViewModeBarProps> = ({ viewMode, setViewMode }) => {
   return (
     <div className="view-mode-bar">
       <button

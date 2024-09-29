@@ -1,4 +1,16 @@
 import React from 'react';
+interface MovieCardProps {
+  movie: {
+    title: string;
+    medium_cover_image: string;
+    description_full?: string;
+    summary?: string;
+    torrents: Array<{ hash: string; quality: string }>;
+  };
+  viewMode: string;
+  copyMagnetLink: (hash: string, title: string) => void;
+  isDarkMode: boolean;
+}
 
 const MovieCard = ({ movie, viewMode, copyMagnetLink, isDarkMode }) => {
   return (

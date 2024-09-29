@@ -1,7 +1,14 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 
-const NavBar = ({ isDarkMode, toggleDarkMode, query, setQuery, fetchMovies }) => {
+interface NavBarProps {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+  setQuery: (query: string) => void;
+  fetchMovies: () => void;
+}
+
+const NavBar: React.FC<NavBarProps> = ({ isDarkMode, toggleDarkMode, query, setQuery, fetchMovies }) => {
   return (
     <nav className="navbar">
       <h1 className="logo">Movie Bait</h1>
