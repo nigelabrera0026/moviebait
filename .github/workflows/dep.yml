@@ -37,6 +37,9 @@ jobs:
       run: npx wait-on http://localhost:5173
       # Wait until Vite is fully ready and accessible
 
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+    
     - name: Run Playwright Tests
       run: npm run test:playwright
 
