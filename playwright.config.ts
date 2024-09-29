@@ -8,4 +8,5 @@ export default defineConfig({
     headless: true,                     // Run in headless mode
     viewport: { width: 1280, height: 720 },  // Set the default viewport size
   },
+  
 });
