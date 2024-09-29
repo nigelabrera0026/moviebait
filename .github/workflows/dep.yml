@@ -25,16 +25,20 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: 'npm'
 
     - name: Install Dependencies
       run: npm ci
 
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps chromium
+    - name: Start Vite Server
+      run: npm run dev &
+      # Run Vite in the background to make it accessible
+
+    - name: Wait for Vite to be ready
+      run: npx wait-on http://localhost:5173
+      # Wait until Vite is fully ready and accessible
 
     - name: Run Playwright Tests
-      run: npx playwright test
+      run: npm run test:playwright
 
   # Deploy job, triggered after successful tests
   deploy:
