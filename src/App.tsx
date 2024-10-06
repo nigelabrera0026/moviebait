@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import SearchBar from './components/SearchBar';
 import ControlBar from './components/ControlBar';
 import ViewModeBar from './components/ViewModelBar';
 import MovieList from './components/MovieList';
@@ -15,15 +14,15 @@ interface Movie {
   torrents: Array<{ hash: string; quality: string }>;
 }
 
-const App = () => {
-  const [movies, setMovies] = useState([]);
+const App: React.FC = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [copyMessageVisible, setCopyMessageVisible] = useState(false);
   const [filter, setFilter] = useState('trending');
-  const [isDarkMode, setIsDarkMode] = useState(false); // Dark mode state
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [limit, setLimit] = useState(15);
   const [page, setPage] = useState(1);
 
@@ -42,10 +41,10 @@ const App = () => {
     }
   };
 
-  // Only fetch movies when limit, page, or filter changes
+  // Fetch movies when limit, page, or filter changes
   useEffect(() => {
     fetchMovies();
-  }, [limit, page]); // Removed 'query' from dependency array
+  }, [limit, page]);
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
@@ -67,9 +66,9 @@ const App = () => {
         toggleDarkMode={toggleDarkMode}
         query={query}
         setQuery={setQuery}
-        fetchMovies={fetchMovies} // This will be manually triggered
+        fetchMovies={fetchMovies}
       />
-      <ControlBar filter={filter} handleFilterClick={setFilter} />
+      <ControlBar filter={filter} handleFilterClick={setFilter} limit={limit} setLimit={setLimit} viewMode={viewMode} setViewMode={setViewMode} />
       <ViewModeBar viewMode={viewMode} setViewMode={setViewMode} />
       {error ? <Notification message={error} isVisible={!!error} /> : null}
       {loading ? <div className="loading">Loading...</div> : <MovieList movies={movies} viewMode={viewMode} />}
