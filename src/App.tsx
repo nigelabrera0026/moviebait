@@ -6,6 +6,12 @@ import Notification from './components/Notification';
 import NavBar from './components/NavBar';
 import './App.css';
 
+
+/**
+ * TODO: Rely on the prod and debug the search, category, and other shit.
+ */
+
+
 interface Movie {
   id: number;
   title: string;
